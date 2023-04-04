@@ -2,3 +2,4 @@ data/raw/*.csv
 data/code/notebooks/*.csv
 touchdesigner/Backup/**
 data/code/ckran/**
+config.py
