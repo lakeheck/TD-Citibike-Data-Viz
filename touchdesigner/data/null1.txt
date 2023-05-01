@@ -1,0 +1,69 @@
+eventID	routeID	pts	offset
+30	E 58 St & 3 Ave-FDR Drive & E 35 St	90	297142
+78	Union Ave & Wallabout St-Eastern Pkwy & Kingston Ave	62	414325
+85	3 Ave & E 163 St-E 161 St & River Ave	38	25954
+98	8 Ave & W 49 St-11 Ave & W 41 St	31	471861
+103	Bushwick Ave & Forrest St-Devoe St & Lorimer St	38	144185
+105	Bushwick Ave & Forrest St-Bayard St & Leonard St	49	144247
+107	Bushwick Ave & Forrest St-S 4 St & Rodney St	40	144313
+109	Bushwick Ave & Forrest St-N 12 St & Bedford Ave	53	144365
+113	W 35 St & 9 Ave-9 Ave & W 18 St	33	73133
+114	W 35 St & 9 Ave-W 20 St & 10 Ave	34	73166
+115	W 35 St & 9 Ave-W 20 St & 7 Ave	31	73200
+119	W 35 St & 9 Ave-W 47 St & 10 Ave	27	73281
+120	Prospect Pl & Howard Ave-Fulton St & Utica Ave	24	6153
+126	Prospect Pl & Howard Ave-Winthrop St & Nostrand Ave	65	6242
+127	Prospect Pl & Howard Ave-Somers St & Broadway	36	6307
+128	Prospect Pl & Howard Ave-Thomas S. Boyland St & Marion St	25	6343
+129	Prospect Pl & Howard Ave-Stagg St & Morgan Ave	122	6368
+134	Audobon Ave & W 179 St-E 156 & Brook Ave	101	182072
+137	Audobon Ave & W 179 St-Featherbed Ln & Jerome Ave	31	182210
+138	Audobon Ave & W 179 St-Morningside Ave & W 123 St	73	182241
+139	Audobon Ave & W 179 St-River Ave & McClellan St	46	182314
+140	Grand Concourse & E 156 St-Grand Concourse & E 167 St	38	470867
+141	Grand Concourse & E 156 St-Grand Concourse & E 161 St	41	470905
+143	Grand Concourse & E 156 St-Willis Ave & E 143 St	41	470967
+145	Grand Concourse & E 156 St-Cauldwell Ave & E 161 St	48	471042
+149	Grand Concourse & E 156 St-Lenox Ave & W 146 St	39	471167
+150	E 117 St & 1 Ave-Lenox Ave & W 117 St	19	385162
+156	E 117 St & 1 Ave-2 Ave & E 96 St	57	385249
+158	E 117 St & 1 Ave-Amsterdam Ave & W 125 St	47	385316
+161	W 47 St & 6 Ave-FDR Drive & E 35 St	79	5696
+165	W 47 St & 6 Ave-W 50 St & 10 Ave	25	5826
+168	W 47 St & 6 Ave-W 31 St & 7 Ave	29	5864
+171	Hudson St & W 13 St-University Pl & E 14 St	24	208124
+173	Hudson St & W 13 St-Spring St & Hudson St	28	208155
+176	Hudson St & W 13 St-Barrow St & Hudson St	28	208219
+177	Hudson St & W 13 St-Broadway & W 25 St	40	208247
+178	Hudson St & W 13 St-Thompson St & Bleecker St	31	208287
+183	Lenox Ave & W 111 St-1 Ave & E 110 St	31	98313
+188	Lenox Ave & W 111 St-Lenox Ave & W 117 St	25	98421
+193	Wales Ave & E 147 St-Grand Concourse & E 144 St	43	169662
+196	Wales Ave & E 147 St-E 142 St & 3 Ave	41	169732
+198	Wales Ave & E 147 St-Morris Ave & E 142 St	40	169802
+220	10 Ave & W 14 St-West St & Chambers St	38	65031
+221	10 Ave & W 14 St-West St & Liberty St	50	65069
+222	10 Ave & W 14 St-12 Ave & W 40 St	49	65119
+223	10 Ave & W 14 St-Christopher St & Greenwich St	37	65168
+225	10 Ave & W 14 St-Little West St & 1 Pl	60	65231
+226	10 Ave & W 14 St-West Thames St	65	65291
+227	10 Ave & W 14 St-Murray St & West St	44	65356
+228	10 Ave & W 14 St-10 Ave & W 28 St	29	65400
+229	10 Ave & W 14 St-Watts St & Greenwich St	36	65429
+231	7 Ave & 17 St-Classon Ave & St Marks Ave	62	274709
+251	E 77 St & 1 Ave-W 20 St & 5 Ave	82	364214
+252	E 77 St & 1 Ave-Riverside Dr & W 82 St	57	364296
+253	E 77 St & 1 Ave-N 15 St & Wythe Ave	114	364353
+256	E 77 St & 1 Ave-E 13 St & 2 Ave	109	364516
+257	E 77 St & 1 Ave-E 10 St & 2 Ave	120	364625
+259	E 77 St & 1 Ave-3 Ave & E 62 St	40	364765
+260	Lafayette Ave & Ft Greene Pl-Bergen St & Vanderbilt Ave	28	375167
+273	E 123 St & Lexington Ave-Morningside Ave & W 123 St	28	308376
+279	E 123 St & Lexington Ave-Mt Morris Park W & W 120 St	20	308476
+280	S 2 St & Kent Ave-MacDougal St & Prince St	88	266109
+283	S 2 St & Kent Ave-Meserole Ave & Manhattan Ave	44	266234
+286	S 2 St & Kent Ave-Myrtle Ave & Fleet Pl	87	266325
+287	S 2 St & Kent Ave-Suffolk St & Stanton St	56	266412
+293	W 54 St & 6 Ave-West End Ave & W 60 St	25	420005
+295	W 54 St & 6 Ave-Central Park West & W 72 St	41	420040
+298	W 54 St & 6 Ave-12 Ave & W 40 St	46	420120

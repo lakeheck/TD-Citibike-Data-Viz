@@ -1,5 +1,7 @@
 data/raw/*.csv
 data/code/notebooks/*.csv
 touchdesigner/Backup/**
+touchdesigner/data/*.csv
 data/code/ckran/**
 config.py
+touchdesigner/*.csv 
