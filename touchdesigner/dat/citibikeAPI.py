@@ -206,27 +206,27 @@ def normalizeRoutes(routes, station_data):
 
 	return normalized_routes
 
-def outputRouteFilesForTextures(normalized_routes, path):
-	id = 0
-	cum = 0
-	exportDict = {}
-	unrolled_points = []
-	for k, v in normalized_routes.items(): 
-		d = {}
-		d['points'] = v['points']
-		unrolled_points += v['points']
-		pts = len(v)
-		d['pts'] = pts
-		d['offset'] = cum
-		d['duration'] = v['duration']
-		d['distance'] = v['distance']
-		cum += pts
-		d['id'] = id
-		id += 1
-		exportDict[k] = d
-	geoDf = pd.DataFrame(exportDict).T
-	routeData = geoDf[['id', 'pts', 'offset', 'duration', 'distance']]
+# def outputRouteFilesForTextures(normalized_routes, path):
+# 	id = 0
+# 	cum = 0
+# 	exportDict = {}
+# 	unrolled_points = []
+# 	for k, v in normalized_routes.items(): 
+# 		d = {}
+# 		d['points'] = v['points']
+# 		unrolled_points += v['points']
+# 		pts = len(v)
+# 		d['pts'] = pts
+# 		d['offset'] = cum
+# 		d['duration'] = v['duration']
+# 		d['distance'] = v['distance']
+# 		cum += pts
+# 		d['id'] = id
+# 		id += 1
+# 		exportDict[k] = d
+# 	geoDf = pd.DataFrame(exportDict).T
+# 	routeData = geoDf[['id', 'pts', 'offset', 'duration', 'distance']]
 	
-	pd.DataFrame(unrolled_points).to_csv(path + '/unrolled_points.csv')
-	pd.DataFrame(routeData).to_csv(path+'/routeData.csv')
-	# return routeData, unrolled_points
+# 	pd.DataFrame(unrolled_points).to_csv(path + '/unrolled_points.csv')
+# 	pd.DataFrame(routeData).to_csv(path+'/routeData.csv')
+# 	# return routeData, unrolled_points

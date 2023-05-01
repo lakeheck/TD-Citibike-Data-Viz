@@ -9,10 +9,12 @@ uniform vec2 uUnrolledTexRes;
 
 
 
-// uniform vec2[UNROLLED_POINTS] uPoints;
+uniform samplerBuffer uPoints;
 
 uniform sampler2D sPos;
 uniform sampler2D sUnrolledRoutes;
+
+// uniform vec2[437344] uPoints;
 
 out Vertex
 {
@@ -21,12 +23,14 @@ out Vertex
 	vec3 worldSpacePos;
 	vec3 worldSpaceNorm;
 	float adsr;
+	float time;
 	flat int cameraIndex;
 } oVert;
 
 ivec2 index_to_uv(int idx, vec2 res){
 	int x = int(floor(fract(idx / res.x) * res.x));
 	int y = int(floor(idx / res.y));
+
 	return ivec2(x,y);
 }
 
@@ -62,25 +66,31 @@ void main()
 	float alpha = 1.;
 
 	// we want to just skip instances not filled with event data
-	if(routeData.x < 0){
+	if(routeData.x <0){
 		newP.xy = vec2(0);
 		alpha = 0.0;
 	}else
 	{
-		if(vtx <= routeData.x){ 
-			ivec2 lookup = index_to_uv(int(routeData.y) + vtx , uUnrolledTexRes);
-			newP.xy = texelFetch(sUnrolledRoutes, lookup, 0).xy;
+		if(vtx < routeData.x){ 
+			// ivec2 lookup = index_to_uv(int(routeData.y) + vtx -1, uUnrolledTexRes);
+			// newP.xy = texelFetch(sUnrolledRoutes, lookup, 0).xy;
+			// vec2 ref = vec2(lookup) + vec2(0.5);
+			// ref /= uUnrolledTexRes;
+			// newP.xy = texture(sUnrolledRoutes, ref).xy;
 			oVert.uv = vec2(clamp(float(vtx)/float(routeData.x),0,1), 0);
-			// newP.xy = uPoints[routeData.y + vtx]; //index with start offset plus vertex number, if our vtx number is less than the number of points on route
+			// newP.xy = uPoints[int(routeData.y + vtx)]; //index with start offset plus vertex number, if our vtx number is less than the number of points on route
+			newP.xy = texelFetch(uPoints, int(routeData.y + vtx)).xy;
 		} 
 		//if we have more vertices than points on route, set all extras to the last point on route and make transparent
 		else{
-			ivec2 lookup = index_to_uv(int(routeData.y) + int(routeData.x-1), uUnrolledTexRes);
-			newP.xy = texelFetch(sUnrolledRoutes, lookup, 0).xy;
-			alpha = 0.;
+			// ivec2 lookup = index_to_uv(int(routeData.y) + int(routeData.x)-1, uUnrolledTexRes);
+			newP.xy = texelFetch(uPoints, int(routeData.y + routeData.x-1)).xy;
+			// newP.xy = texelFetch(sUnrolledRoutes, lookup, 0).xy;
+			oVert.color *= 0.;
 			oVert.uv = vec2(1, 1);
 		}
 		oVert.adsr = routeData.z;
+		oVert.time = routeData.w;
 	}
 
 

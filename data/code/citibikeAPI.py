@@ -21,14 +21,14 @@ def getAllStationData():
 
 	station_info_df = pd.DataFrame(station_info_data['data']['stations']).set_index('station_id')
 	station_info_df['geoID'] = station_info_df['lat'] + station_info_df['lon']
-	station_info_df = station_info_df[['name', 'lat', 'lon', 'capacity', 'legacy_id', 'geoID', 'region_id']] #extract cols of interest
+	station_info_df = station_info_df[['name', 'lat', 'lon', 'capacity', 'legacy_id', 'geoID']] #extract cols of interest
 	
 	#get station status
 	with urllib.request.urlopen(station_status_url) as url:
 		station_status_data = json.load(url)
 
 	station_status_df = pd.DataFrame(station_status_data['data']['stations']).set_index('station_id')
-	station_status_df = station_status_df[['num_docks_available', 'num_bikes_disabled', 'num_ebikes_available', 'num_bikes_available', 'num_docks_disabled', 'station_status', 'is_renting', 'is_returning', 'last_reported', 'is_installed', 'region_id']] #extract cols of interest
+	station_status_df = station_status_df[['num_docks_available', 'num_bikes_disabled', 'num_ebikes_available', 'num_bikes_available', 'num_docks_disabled', 'station_status', 'is_renting', 'is_returning', 'last_reported', 'is_installed']] #extract cols of interest
 	
 	return station_info_df.merge(station_status_df, left_index=True, right_index=True)
 
@@ -175,16 +175,18 @@ def getRouteBetweenStations(networked_stations, station_data):
 				
 				#route duration in seconds
 				duration = station_status_data['features'][0]['properties']['summary']['duration']
+				distance = station_status_data['features'][0]['properties']['summary']['distance']
 				tempdict = {
 					'points': locations,
-					'duration': duration
+					'duration': duration,
+					'distance': distance
 				}
 				# print(tempdict)
 				routes[k+'-'+i] = tempdict
 			except: 
-				print(k)
 				pass #TODO: figure out what is going on with these stations 
 	return routes
+
 
 def normalizeRoutes(routes, station_data):
 	#normalize location too 
@@ -217,13 +219,13 @@ def outputRouteFilesForTextures(normalized_routes, path):
 		d['pts'] = pts
 		d['offset'] = cum
 		d['duration'] = v['duration']
+		d['distance'] = v['distance']
 		cum += pts
 		d['id'] = id
 		id += 1
 		exportDict[k] = d
 	geoDf = pd.DataFrame(exportDict).T
-	print(geoDf.head())
-	routeData = geoDf[['id', 'pts', 'offset']]
+	routeData = geoDf[['id', 'pts', 'offset', 'duration', 'distance']]
 	
 	pd.DataFrame(unrolled_points).to_csv(path + '/unrolled_points.csv')
 	pd.DataFrame(routeData).to_csv(path+'/routeData.csv')

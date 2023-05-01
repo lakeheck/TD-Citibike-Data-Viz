@@ -13,7 +13,7 @@ import TDFunctions as TDF
 
 # from utils import *
 from citibikeAPI import *
-
+from matplotlib import pyplot as plt
 
 
 class citibikeDataExt:
@@ -34,6 +34,7 @@ class citibikeDataExt:
 		self.networked_stations = None
 		self.normalized_routes = None
 		self.offsets = None 
+		self.scriptOp = op('script1')
 
 
 	#function intended to be called inside a script SOP operator to create geometry 
@@ -63,13 +64,21 @@ class citibikeDataExt:
 	def InitializeData(self):
 		#TODO - insert something to ensure ORS local server is running
 		station_data = getAllStationData() #returns dataframe with station info
+		print('gathered station data')
 		self.ownerComp.store('station_data', station_data)
+		print('stored station data')
 		self.networked_stations = getTopTenConnections(self.trip_data_csv) #use most recent trip csv to create a dictionary with the 10 stations any given station is most connected to
+		print('found connections')
 		self.ownerComp.store('networked_stations', self.networked_stations)
+		print('stored connections')
 		routes = getRouteBetweenStations(self.networked_stations, station_data)
+		print('routes found')
 		self.normalized_routes = normalizeRoutes(routes, station_data) 
+		print('routes normalized')
 		self.ownerComp.store('normalized_routes', self.normalized_routes)
+		print('normalized routes stored')
 		self.OutputRouteFilesForTextures(self.normalized_routes, self.data_path)
+		print('output file saved')
 		print('Initalized Route Data to Memory')
 		return
 	
@@ -165,7 +174,7 @@ class citibikeDataExt:
 			d = {}
 			d['points'] = v['points']
 			unrolled_points += v['points']
-			pts = len(d['points'])
+			pts = len(v['points'])
 			d['pts'] = pts
 			d['offset'] = cum
 			d['duration'] = v['duration']
@@ -175,12 +184,25 @@ class citibikeDataExt:
 			id += 1
 			exportDict[k] = d
 		geoDf = pd.DataFrame(exportDict).T
+		# geoDf.to_csv(path+'/debug.csv')
 		routeData = geoDf[['id', 'pts', 'offset', 'duration', 'distance']] 
 		self.ownerComp.store('offsets', routeData)
-		# pd.DataFrame(unrolled_points).to_csv(path + '/unrolled_points.csv')
+		self.ownerComp.storeStartupValue('offsets', routeData)
+		print('route data stored successfully')
+		self.ownerComp.store('unrolled_points', unrolled_points)
+		self.ownerComp.storeStartupValue('unrolled_points', unrolled_points)
+		print('stored unrolled points successfully')
+		pd.DataFrame(unrolled_points).to_csv(path + '/unrolled_points.csv')
+		# plt.imsave(path+'unrolled_points.jpeg', unrolled_points)
 		# pd.DataFrame(routeData).to_csv(path+'/routeData.csv')
+
+		
+		self.ownerComp.storeStartupValue('realtime_data', None)
 		return
 	
+	def StartupRoutine(self):
+		self.ownerComp.storeStartupValue('realtime_data', None)
+		return 
 
 #Pacific St & Thomas S. Boyland St-Somers St & Rockaway Ave
 #Liberty St & Broadway-Murray St & Greenwich St
