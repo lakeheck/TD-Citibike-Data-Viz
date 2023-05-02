@@ -144,7 +144,8 @@ class citibikeDataExt:
 						dur = routes[routeID]['duration']
 						dist = routes[routeID]['distance']
 						eventID = self.eventCHOP.createEvent(attackTime  = dur)
-						r = [eventID, routeID, offsets.loc[routeID, 'pts'], offsets.loc[routeID, 'offset'], dur, dist]
+						weight = 1  - i / 10
+						r = [eventID, routeID, offsets.loc[routeID, 'pts'], offsets.loc[routeID, 'offset'], dur, dist, weight]
 						# r += routes[routeID]
 						self.eventRouteID_LUT.appendRow(r)
 						# routeData = geoDf[['id', 'pts', 'offset', 'duration']] 

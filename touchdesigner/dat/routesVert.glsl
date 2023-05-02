@@ -7,7 +7,10 @@ uniform vec3 uSpecularColor;
 uniform float uShininess;
 uniform vec2 uUnrolledTexRes; 
 
+uniform float uTime;
+uniform vec3 uTurb; //weight, time scale, xy scale
 
+uniform sampler2D sTurb;
 
 uniform samplerBuffer uPoints;
 
@@ -23,7 +26,7 @@ out Vertex
 	vec3 worldSpacePos;
 	vec3 worldSpaceNorm;
 	float adsr;
-	float time;
+	float weight;
 	flat int cameraIndex;
 } oVert;
 
@@ -45,19 +48,7 @@ void main()
 	// First deform the vertex and normal
 	// TDDeform always returns values in world space
 	vec3 newP = P;
-	//idk mod() wasnt working so had to write it out longform...
-	// float x = floor(fract(TDInstanceID() / suPosRes.x) * suPosRes.x) ;
-	// float y = floor(TDInstanceID() / suPosRes.y);
-	// vec2 ref = vec2(x,y) + vec2(0.5); //grab middle of px
-	// ref /= suPosRes; //convert to uv
-
 	vec3 uvUnwrapCoord = TDInstanceTexCoord(TDUVUnwrapCoord());
-
-	//sample uv - we need to add so that the points of like geometry stay "together" 
-	// newP.xy += texelFetch(sPos, ivec2(int(x), int(y)) , 0).rg;
-
-
-
 	//grab num pionts for route from route lookup 
 	vec4 routeData = vec4(TDInstanceCustomAttrib0()); // pts in route, start lookup index offset, adsr
 
@@ -65,36 +56,30 @@ void main()
 	// // This is here to ensure we only execute lighting etc. code
 	float alpha = 1.;
 
-	// we want to just skip instances not filled with event data
+	// we want to just skip instances not filled with event data, with a pts value of -1
 	if(routeData.x <0){
 		newP.xy = vec2(0);
 		alpha = 0.0;
 	}else
 	{
-		if(vtx < routeData.x){ 
-			// ivec2 lookup = index_to_uv(int(routeData.y) + vtx -1, uUnrolledTexRes);
-			// newP.xy = texelFetch(sUnrolledRoutes, lookup, 0).xy;
-			// vec2 ref = vec2(lookup) + vec2(0.5);
-			// ref /= uUnrolledTexRes;
-			// newP.xy = texture(sUnrolledRoutes, ref).xy;
-			oVert.uv = vec2(clamp(float(vtx)/float(routeData.x),0,1), 0);
-			// newP.xy = uPoints[int(routeData.y + vtx)]; //index with start offset plus vertex number, if our vtx number is less than the number of points on route
-			newP.xy = texelFetch(uPoints, int(routeData.y + vtx)).xy;
+		if(vtx < routeData.x){ //if our vertex is needed for this route's polyline
+			oVert.uv = vec2(clamp(float(vtx)/float(routeData.x),0,1), 0); //set its UV linearly based on how far it is on the line
+			newP.xy = texelFetch(uPoints, int(routeData.y + vtx)).xy; //and set its position using the offset and vertex id 
+			newP.z = TDSimplexNoise(newP.xyz * uTurb.z + uTime*uTurb.y) * uTurb.x; //use simplex noise TD fxn
+			// newP.z = texture(sTurb, newP.xy * 2.0).r * .05; //use newP.xy as uv lookup coords
 		} 
 		//if we have more vertices than points on route, set all extras to the last point on route and make transparent
 		else{
-			// ivec2 lookup = index_to_uv(int(routeData.y) + int(routeData.x)-1, uUnrolledTexRes);
-			newP.xy = texelFetch(uPoints, int(routeData.y + routeData.x-1)).xy;
-			// newP.xy = texelFetch(sUnrolledRoutes, lookup, 0).xy;
-			oVert.color *= 0.;
-			oVert.uv = vec2(1, 1);
+			newP.xy = texelFetch(uPoints, int(routeData.y + routeData.x-1)).xy; //set the point location to the last vertex on the line
+			oVert.color *= 0.; //set the color to zero
+			oVert.uv = vec2(1, 1); //and the UVs to some default 
 		}
-		oVert.adsr = routeData.z;
-		oVert.time = routeData.w;
+		oVert.adsr = routeData.z; // send adsr to fragment shader
+		oVert.weight = routeData.w; //send weight to fragment shader
+		#if Weightroutes == 1 //use define statement to tell the compiler when to run/skip this code
+			oVert.color *= oVert.weight; //multiply each vertex by that route (i.e. Instance) weight. Most common routes are brigher
+		#endif 
 	}
-
-
-	// newP = vec3(id, vtx, 0);
 	vec4 worldSpacePos = TDDeform(newP);
 	gl_Position = TDWorldToProj(worldSpacePos, uvUnwrapCoord);
 	// when we need it. If picking is active we don't need lighting, so
