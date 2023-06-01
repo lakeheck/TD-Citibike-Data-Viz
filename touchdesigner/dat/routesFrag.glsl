@@ -8,6 +8,8 @@ uniform float uHighlight;
 uniform float uShininess;
 uniform float uImpulseLength;
 
+uniform float uRouteWeightWeight;
+
 in Vertex
 {
 	vec4 color;
@@ -15,6 +17,7 @@ in Vertex
 	vec3 worldSpacePos;
 	vec3 worldSpaceNorm;
 	float adsr;
+	float weight;
 	flat int cameraIndex;
 } iVert;
 
@@ -35,11 +38,16 @@ void main()
 	vec3 normal = normalize(worldSpaceNorm.xyz);
 	vec3 viewVec = normalize(uTDMats[iVert.cameraIndex].camInverse[3].xyz - iVert.worldSpacePos.xyz );
 
-	float luminance = 1.0 - length(iVert.uv);
+	float luminance = SQRT_2 - length(iVert.uv);
+	
+	// apply weighted average depending on how much we want to module brightness by route probability
+	luminance = luminance * (1-uRouteWeightWeight) + luminance * iVert.weight * uRouteWeightWeight;
+	
+
 	vec4 color = TDColor(iVert.color * luminance);
 	
 	
-	if(abs(iVert.uv.x - uHighlight) < uImpulseLength && iVert.uv.y < 1){
+	if(abs(iVert.uv.x - iVert.adsr) < uImpulseLength && iVert.uv.y < 1){
 		color +=  luminance * iVert.adsr ;
 	}
 

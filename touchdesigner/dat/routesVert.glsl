@@ -5,7 +5,8 @@ uniform vec3 uDiffuseColor;
 uniform vec3 uAmbientColor;
 uniform vec3 uSpecularColor;
 uniform float uShininess;
-uniform vec2 uUnrolledTexRes; 
+uniform vec3 uRouteColor;
+
 
 uniform float uTime;
 uniform vec3 uTurb; //weight, time scale, xy scale
@@ -52,7 +53,8 @@ void main()
 	//grab num pionts for route from route lookup 
 	vec4 routeData = vec4(TDInstanceCustomAttrib0()); // pts in route, start lookup index offset, adsr
 
-
+	oVert.color.rgb = uRouteColor.rgb;
+	oVert.color.a = 1;
 	// // This is here to ensure we only execute lighting etc. code
 	float alpha = 1.;
 
@@ -65,8 +67,10 @@ void main()
 		if(vtx < routeData.x){ //if our vertex is needed for this route's polyline
 			oVert.uv = vec2(clamp(float(vtx)/float(routeData.x),0,1), 0); //set its UV linearly based on how far it is on the line
 			newP.xy = texelFetch(uPoints, int(routeData.y + vtx)).xy; //and set its position using the offset and vertex id 
-			newP.z = TDSimplexNoise(newP.xyz * uTurb.z + uTime*uTurb.y) * uTurb.x; //use simplex noise TD fxn
-			// newP.z = texture(sTurb, newP.xy * 2.0).r * .05; //use newP.xy as uv lookup coords
+			// newP.z = TDSimplexNoise(newP.xyz * uTurb.z + uTime*uTurb.y) * uTurb.x; //use simplex noise TD fxn
+			newP.z = texture(sTurb, newP.xy * 2.0).r * uTurb.x; //use newP.xy as uv lookup coords
+			newP.z += TDSimplexNoise(newP.xyz * uTurb.z + uTime*uTurb.y) * uTurb.x * .1; //use simplex noise TD fxn
+
 		} 
 		//if we have more vertices than points on route, set all extras to the last point on route and make transparent
 		else{
@@ -76,9 +80,9 @@ void main()
 		}
 		oVert.adsr = routeData.z; // send adsr to fragment shader
 		oVert.weight = routeData.w; //send weight to fragment shader
-		#if Weightroutes == 1 //use define statement to tell the compiler when to run/skip this code
-			oVert.color *= oVert.weight; //multiply each vertex by that route (i.e. Instance) weight. Most common routes are brigher
-		#endif 
+		// #if Weightroutes == 1 //use define statement to tell the compiler when to run/skip this code
+		// 	oVert.color *= oVert.weight; //multiply each vertex by that route (i.e. Instance) weight. Most common routes are brigher
+		// #endif 
 	}
 	vec4 worldSpacePos = TDDeform(newP);
 	gl_Position = TDWorldToProj(worldSpacePos, uvUnwrapCoord);
@@ -91,7 +95,6 @@ void main()
 	int cameraIndex = TDCameraIndex();
 	oVert.cameraIndex = cameraIndex;
 	oVert.worldSpacePos.xyz = worldSpacePos.xyz;
-	oVert.color = TDInstanceColor(TDPointColor());
 	oVert.color.a = alpha; //update color transparency
 	vec3 worldSpaceNorm = normalize(TDDeformNorm(N));
 	oVert.worldSpaceNorm.xyz = worldSpaceNorm;

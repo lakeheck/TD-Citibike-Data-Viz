@@ -35,6 +35,7 @@ class citibikeDataExt:
 		self.normalized_routes = None
 		self.offsets = None 
 		self.scriptOp = op('script1')
+		self.controller = op('CONTROLLER')
 
 
 	#function intended to be called inside a script SOP operator to create geometry 
@@ -60,6 +61,9 @@ class citibikeDataExt:
 			# 		p1.z = self.pointsDat[e,3]
 		return
 	
+	def TestImports(self):
+		return 1
+	
 	#TODO - cache data
 	def InitializeData(self):
 		#TODO - insert something to ensure ORS local server is running
@@ -80,6 +84,7 @@ class citibikeDataExt:
 		self.OutputRouteFilesForTextures(self.normalized_routes, self.data_path)
 		print('output file saved')
 		print('Initalized Route Data to Memory')
+		self.ownerComp.store('initialized', True)
 		return
 	
 	def GetDataPath(self):
@@ -103,7 +108,7 @@ class citibikeDataExt:
 		with urllib.request.urlopen(station_status_url) as url:
 			station_status_data = json.load(url)
 		station_status_df = pd.DataFrame(station_status_data['data']['stations']).set_index('station_id')
-		station_status_df = station_status_df[['num_ebikes_available', 'last_reported']] #extract cols of interest, here just ebike and update timestampe 
+		station_status_df = station_status_df[['num_ebikes_available', 'num_bikes_available', 'last_reported']] #extract cols of interest, here just ebike and update timestampe 
 		#TODO: we should probably screen out ebike updates due to station-level events such as activation / nonactivation, rebalancing, etc 
 		updated_df = station_status_df
 		
@@ -114,10 +119,23 @@ class citibikeDataExt:
 			udc = updated_df.sort_index()
 			sdc = old_dataframe.sort_index()
 			for i in sdc.index:
-				if udc.loc[i,'num_ebikes_available'] == sdc.loc[i,'num_ebikes_available']: pass 
-				else: 
-					p = station_data.loc[i, 'name']
-					starts += [[p]]
+				if self.controller.par.Displaymode.eval() == 'AllBikes': #if display mode is all bikes
+					if (udc.loc[i,'num_ebikes_available'] == sdc.loc[i,'num_ebikes_available']
+						and udc.loc[i,'num_bikes_available'] == sdc.loc[i,'num_bikes_available']): pass 
+					else: 
+						p = station_data.loc[i, 'name']
+						starts += [[p]]
+				elif self.controller.par.Displaymode.eval() == 'EbikesOnly': #if display mode is ebike only
+					if (udc.loc[i,'num_ebikes_available'] == sdc.loc[i,'num_ebikes_available']): pass 
+					else: 
+						p = station_data.loc[i, 'name']
+						starts += [[p]]
+				elif self.controller.par.Displaymode.eval() == 'RegularBikesOnly': #if display mode is reg bike only
+					if (udc.loc[i,'num_bikes_available'] == sdc.loc[i,'num_bikes_available']): pass 
+					else: 
+						p = station_data.loc[i, 'name']
+						starts += [[p]]
+				else: pass 
 		self.ownerComp.store('realtime_data', updated_df)
 		print('{} rides started since last call'.format(len(starts)))
 		return starts
