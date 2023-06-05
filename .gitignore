@@ -6,3 +6,4 @@ data/code/ckran/**
 config.py
 touchdesigner/*.csv 
 touchdesigner/*.mov
+ue/**
